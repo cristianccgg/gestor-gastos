@@ -22,6 +22,7 @@ function App() {
   const [abrirConfirmacion, setAbrirConfirmacion] = useState(null);
   const [errorTitulo, setErrorTitulo] = useState("");
   const [errorMonto, setErrorMonto] = useState("");
+  const [categoriaFiltro, setCategoriaFiltro] = useState("");
 
   useEffect(() => {
     localStorage.setItem("gastos", JSON.stringify(gastos));
@@ -72,6 +73,14 @@ function App() {
   };
 
   const total = gastos.reduce((acc, gasto) => acc + gasto.monto, 0);
+  const gastosMostrados = categoriaFiltro
+    ? gastos.filter((gasto) => gasto.categoria === categoriaFiltro)
+    : gastos;
+
+  const totalCategoria = gastosMostrados.reduce(
+    (acc, gasto) => acc + gasto.monto,
+    0,
+  );
 
   return (
     <div className="min-h-screen bg-teal-700">
@@ -153,13 +162,38 @@ function App() {
         <h1 className="text-2xl font-bold mt-10 mb-4 text-teal-50">
           Mis gastos
         </h1>
-        {gastos.length === 0 ? (
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button
+            onClick={() => setCategoriaFiltro("")}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium capitalize transition-colors ${
+              categoriaFiltro === ""
+                ? "bg-emerald-500 text-teal-950"
+                : "bg-teal-900/40 border border-teal-800 text-teal-300 hover:text-teal-100"
+            }`}
+          >
+            Todas
+          </button>
+          {categorias.map((categoria) => (
+            <button
+              key={categoria}
+              onClick={() => setCategoriaFiltro(categoria)}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium capitalize transition-colors ${
+                categoriaFiltro === categoria
+                  ? "bg-emerald-500 text-teal-950"
+                  : "bg-teal-900/40 border border-teal-800 text-teal-300 hover:text-teal-100"
+              }`}
+            >
+              {categoria}
+            </button>
+          ))}
+        </div>
+        {gastosMostrados.length === 0 ? (
           <p className="text-sm text-teal-400 text-center bg-teal-950 border border-teal-800 rounded-2xl p-6">
             Aún no tienes gastos registrados
           </p>
         ) : (
           <div className="flex flex-col gap-3">
-            {gastos.map((gasto) => (
+            {gastosMostrados.map((gasto) => (
               <Gasto
                 key={gasto.id}
                 gasto={gasto}
@@ -180,7 +214,16 @@ function App() {
             ))}
           </div>
         )}
-
+        {categoriaFiltro !== "" && (
+          <div className="flex justify-between items-center bg-teal-950 border border-teal-800 rounded-2xl p-4 shadow-lg mt-4">
+            <h2 className="font-semibold text-teal-50">
+              Gastos {categoriaFiltro}
+            </h2>
+            <p className="font-semibold text-emerald-400">
+              ${totalCategoria.toLocaleString("es-CO")}
+            </p>
+          </div>
+        )}
         <div className="flex justify-between items-center bg-teal-950 border border-teal-800 rounded-2xl p-4 shadow-lg mt-4">
           <h2 className="font-semibold text-teal-50">Gastos totales</h2>
           <p className="font-semibold text-emerald-400">
