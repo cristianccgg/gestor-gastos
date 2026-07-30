@@ -7,9 +7,11 @@ const Gasto = ({
   setAbrirEditor,
   setCategoriaEditar,
   setMontoEditar,
+  setFechaEditar,
   setTituloEditar,
   tituloEditar,
   montoEditar,
+  fechaEditar,
   categoriaEditar,
   categorias,
   abrirConfirmacion,
@@ -25,11 +27,18 @@ const Gasto = ({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            editarGasto(gasto.id, tituloEditar, montoEditar, categoriaEditar);
+            editarGasto(
+              gasto.id,
+              tituloEditar,
+              montoEditar,
+              categoriaEditar,
+              fechaEditar,
+            );
             setAbrirEditor(null);
             setCategoriaEditar("");
             setMontoEditar("");
             setTituloEditar("");
+            setFechaEditar("");
           }}
           className="flex flex-col gap-3 w-full"
         >
@@ -47,19 +56,27 @@ const Gasto = ({
             placeholder="00"
             className="bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 placeholder:text-teal-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           />
-          <select
-            value={categoriaEditar}
-            onChange={(e) => setCategoriaEditar(e.target.value)}
-            name="categoria"
-            className="bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-          >
-            <option value="">Seleccione una categoría</option>
-            {categorias.map((categoria) => (
-              <option key={categoria} value={categoria}>
-                {categoria}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-3">
+            <input
+              value={fechaEditar}
+              onChange={(e) => setFechaEditar(e.target.value)}
+              type="date"
+              className="flex-1 min-w-0 bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 placeholder:text-teal-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            />
+            <select
+              value={categoriaEditar}
+              onChange={(e) => setCategoriaEditar(e.target.value)}
+              name="categoria"
+              className="flex-1 min-w-0 bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            >
+              <option value="">Seleccione una categoría</option>
+              {categorias.map((categoria) => (
+                <option key={categoria} value={categoria}>
+                  {categoria}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setAbrirEditor(null)}
@@ -78,22 +95,43 @@ const Gasto = ({
         </form>
       ) : (
         <>
-          <div>
-            <p className="font-semibold text-teal-50">{gasto.titulo}</p>
-            <p className="text-xs text-teal-400 capitalize">
-              {gasto.categoria}
-            </p>
+          <div className="flex flex-1 items-center gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-teal-400 uppercase tracking-wide">
+                Gasto
+              </p>
+              <p className="font-semibold text-teal-50 truncate">
+                {gasto.titulo}
+              </p>
+              <p className="text-xs text-teal-400 capitalize">
+                {gasto.categoria}
+              </p>
+            </div>
+            <div className="flex-1 text-center">
+              <p className="text-xs text-teal-400 uppercase tracking-wide">
+                Monto
+              </p>
+              <p className="font-semibold text-emerald-400">
+                ${gasto.monto.toLocaleString("es-CO")}
+              </p>
+            </div>
+            <div className="flex-1 text-center">
+              <p className="text-xs text-teal-400 uppercase tracking-wide">
+                Fecha
+              </p>
+              <p className="font-semibold text-teal-50 whitespace-nowrap">
+                {gasto.fecha}
+              </p>
+            </div>
           </div>
-          <p className="font-semibold text-emerald-400">
-            ${gasto.monto.toLocaleString("es-CO")}
-          </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-4">
             <button
               onClick={() => {
                 setAbrirEditor(gasto.id);
                 setCategoriaEditar(gasto.categoria);
                 setTituloEditar(gasto.titulo);
                 setMontoEditar(gasto.monto);
+                setFechaEditar(gasto.fecha);
               }}
               type="button"
               className="text-teal-400 hover:text-emerald-400 transition-colors"

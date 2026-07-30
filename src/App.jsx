@@ -13,11 +13,13 @@ function App() {
   const [datosFormulario, setDatosFormulario] = useState({
     titulo: "",
     monto: "",
+    fecha: new Date().toISOString().split("T")[0],
     categoria: "",
   });
   const [abrirEditor, setAbrirEditor] = useState(null);
   const [tituloEditar, setTituloEditar] = useState("");
   const [montoEditar, setMontoEditar] = useState("");
+  const [fechaEditar, setFechaEditar] = useState("");
   const [categoriaEditar, setCategoriaEditar] = useState("");
   const [abrirConfirmacion, setAbrirConfirmacion] = useState(null);
   const [errorTitulo, setErrorTitulo] = useState("");
@@ -37,6 +39,7 @@ function App() {
         id: crypto.randomUUID(),
         titulo: datosFormulario.titulo,
         monto: Number(datosFormulario.monto),
+        fecha: datosFormulario.fecha,
         categoria: datosFormulario.categoria,
       };
       setErrorTitulo(false);
@@ -45,6 +48,7 @@ function App() {
       setDatosFormulario({
         titulo: "",
         monto: "",
+        fecha: "",
         categoria: "",
       });
     } else {
@@ -57,7 +61,13 @@ function App() {
     setGastos((prevGastos) => prevGastos.filter((gasto) => gasto.id !== id));
   };
 
-  const editarGasto = (idGasto, tituloNuevo, montoNuevo, categoriaNueva) => {
+  const editarGasto = (
+    idGasto,
+    tituloNuevo,
+    montoNuevo,
+    categoriaNueva,
+    fechaNueva,
+  ) => {
     setGastos((prevGastos) =>
       prevGastos.map((gasto) =>
         gasto.id === idGasto
@@ -65,6 +75,7 @@ function App() {
               ...gasto,
               titulo: tituloNuevo,
               monto: Number(montoNuevo),
+              fecha: fechaNueva,
               categoria: categoriaNueva,
             }
           : gasto,
@@ -74,8 +85,10 @@ function App() {
 
   const total = gastos.reduce((acc, gasto) => acc + gasto.monto, 0);
   const gastosMostrados = categoriaFiltro
-    ? gastos.filter((gasto) => gasto.categoria === categoriaFiltro)
-    : gastos;
+    ? gastos
+        .filter((gasto) => gasto.categoria === categoriaFiltro)
+        .sort((a, b) => (a.fecha > b.fecha ? 1 : -1))
+    : gastos.sort((a, b) => (a.fecha > b.fecha ? 1 : -1));
 
   const totalCategoria = gastosMostrados.reduce(
     (acc, gasto) => acc + gasto.monto,
@@ -123,24 +136,37 @@ function App() {
             placeholder="00"
             className="bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 placeholder:text-teal-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           />
-          <select
-            name="categoria"
-            value={datosFormulario.categoria}
-            onChange={(e) =>
-              setDatosFormulario((prev) => ({
-                ...prev,
-                categoria: e.target.value,
-              }))
-            }
-            className="bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-          >
-            <option value="">Seleccione una categoría</option>
-            {categorias.map((categoria) => (
-              <option key={categoria} value={categoria}>
-                {categoria}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-3">
+            <input
+              value={datosFormulario.fecha}
+              onChange={(e) =>
+                setDatosFormulario((prev) => ({
+                  ...prev,
+                  fecha: e.target.value,
+                }))
+              }
+              type="date"
+              className="flex-1 min-w-0 bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 placeholder:text-teal-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            />
+            <select
+              name="categoria"
+              value={datosFormulario.categoria}
+              onChange={(e) =>
+                setDatosFormulario((prev) => ({
+                  ...prev,
+                  categoria: e.target.value,
+                }))
+              }
+              className="flex-1 min-w-0 bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            >
+              <option value="">Seleccione una categoría</option>
+              {categorias.map((categoria) => (
+                <option key={categoria} value={categoria}>
+                  {categoria}
+                </option>
+              ))}
+            </select>
+          </div>
           {errorTitulo && (
             <p className="text-red-300 text-xs">
               Escribe un titulo para tu gasto
@@ -200,6 +226,7 @@ function App() {
                 abrirEditor={abrirEditor}
                 tituloEditar={tituloEditar}
                 montoEditar={montoEditar}
+                fechaEditar={fechaEditar}
                 categoriaEditar={categoriaEditar}
                 categorias={categorias}
                 abrirConfirmacion={abrirConfirmacion}
@@ -208,6 +235,7 @@ function App() {
                 setAbrirEditor={setAbrirEditor}
                 setCategoriaEditar={setCategoriaEditar}
                 setMontoEditar={setMontoEditar}
+                setFechaEditar={setFechaEditar}
                 setTituloEditar={setTituloEditar}
                 setAbrirConfirmacion={setAbrirConfirmacion}
               />
