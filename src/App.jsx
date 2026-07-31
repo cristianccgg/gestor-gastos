@@ -4,6 +4,20 @@ import Gasto from "./components/Gasto";
 import FormularioAgregar from "./components/FormularioAgregar";
 
 const categorias = ["comida", "transporte", "entretenimiento"];
+const mesesArray = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
 
 function App() {
   const [gastos, setGastos] = useState(() => {
@@ -96,6 +110,15 @@ function App() {
     0,
   );
 
+  let textoSubtotal = "";
+  if (categoriaFiltro && mesFiltro) {
+    textoSubtotal = `Gastos ${categoriaFiltro} de ${mesesArray[Number(mesFiltro) - 1]}`;
+  } else if (categoriaFiltro) {
+    textoSubtotal = `Gastos ${categoriaFiltro}`;
+  } else if (mesFiltro) {
+    textoSubtotal = `Gastos ${mesesArray[Number(mesFiltro) - 1]}`;
+  }
+
   const meses = [...new Set(gastos.map((gasto) => gasto.fecha.slice(5, 7)))];
 
   return (
@@ -139,20 +162,20 @@ function App() {
               {categoria}
             </button>
           ))}
-          <select
-            name="mes"
-            value={mesFiltro}
-            onChange={(e) => setMesFiltro(e.target.value)}
-            className="flex-1 min-w-0 bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-          >
-            <option value="">Todos los meses</option>
-            {meses.map((mes) => (
-              <option key={mes} value={mes}>
-                {mes}
-              </option>
-            ))}
-          </select>
         </div>
+        <select
+          name="mes"
+          value={mesFiltro}
+          onChange={(e) => setMesFiltro(e.target.value)}
+          className="w-full bg-teal-900/40 border border-teal-800 rounded-lg px-3 py-2 text-sm text-teal-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 mb-4"
+        >
+          <option value="">Todos los meses</option>
+          {meses.map((mes) => (
+            <option key={mes} value={mes}>
+              {mesesArray[Number(mes) - 1]}
+            </option>
+          ))}
+        </select>
         {gastosMostrados.length === 0 ? (
           <p className="text-sm text-teal-400 text-center bg-teal-950 border border-teal-800 rounded-2xl p-6">
             Aún no tienes gastos registrados
@@ -182,16 +205,15 @@ function App() {
             ))}
           </div>
         )}
-        {categoriaFiltro !== "" && (
+        {textoSubtotal && (
           <div className="flex justify-between items-center bg-teal-950 border border-teal-800 rounded-2xl p-4 shadow-lg mt-4">
-            <h2 className="font-semibold text-teal-50">
-              Gastos {categoriaFiltro}
-            </h2>
+            <h2 className="font-semibold text-teal-50">{textoSubtotal}</h2>
             <p className="font-semibold text-emerald-400">
               ${totalCategoria.toLocaleString("es-CO")}
             </p>
           </div>
         )}
+
         <div className="flex justify-between items-center bg-teal-950 border border-teal-800 rounded-2xl p-4 shadow-lg mt-4">
           <h2 className="font-semibold text-teal-50">Gastos totales</h2>
           <p className="font-semibold text-emerald-400">
